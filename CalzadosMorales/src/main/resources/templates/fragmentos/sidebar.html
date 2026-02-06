@@ -1,0 +1,86 @@
+<nav class="sidebar sidebar-offcanvas" id="sidebar" th:fragment="sidebar">
+    <ul class="nav">
+        <li class="nav-item nav-profile">
+            <a href="#" class="nav-link">
+                <div class="nav-profile-image">
+                    <img src="/assets/images/faces/face1.jpg" alt="profile" />
+                    <span class="login-status online"></span>
+                </div>
+                <div class="nav-profile-text d-flex flex-column">
+                    <span class="font-weight-bold mb-2">Xiomara B.</span>
+                    <span class="text-secondary text-small">Administrador</span>
+                </div>
+                <i class="mdi mdi-bookmark-check text-success nav-profile-badge"></i>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="/">
+                <span class="menu-title">Dashboard</span>
+                <i class="mdi mdi-view-dashboard menu-icon"></i>
+            </a>
+        </li>
+
+        
+
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#ui-almacen" aria-expanded="false">
+                <span class="menu-title">Almacén</span>
+                <i class="menu-arrow"></i>
+                <i class="mdi mdi-archive menu-icon"></i>
+            </a>
+            <div class="collapse" id="ui-almacen">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href="/categorias">Categorías</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="/productos">Productos</a></li>
+                </ul>
+            </div>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#ui-ventas" aria-expanded="false">
+                <span class="menu-title">Ventas & Clientes</span>
+                <i class="menu-arrow"></i>
+                <i class="mdi mdi-cash-register menu-icon"></i>
+            </a>
+            <div class="collapse" id="ui-ventas">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href="/clientes">Gestión Clientes</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="/ventas/nueva">Nueva Venta</a></li>
+                </ul>
+            </div>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#ui-reportes" aria-expanded="false">
+                <span class="menu-title">Reportes</span>
+                <i class="menu-arrow"></i>
+                <i class="mdi mdi-chart-bar menu-icon"></i>
+            </a>
+            <div class="collapse" id="ui-reportes">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href="/consultas/stock">Consulta Stock</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="/consultas/precios">Consulta Precios</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="/reportes/ventas">Reporte Ventas</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="/reportes/top">Prod. Más Vendidos</a></li>
+                </ul>
+            </div>
+        </li>
+
+       
+
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#ui-seguridad" aria-expanded="false">
+                <span class="menu-title">Seguridad</span>
+                <i class="menu-arrow"></i>
+                <i class="mdi mdi-security menu-icon"></i>
+            </a>
+            <div class="collapse" id="ui-seguridad">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href="/usuarios">Usuarios</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="/roles">Roles y Accesos</a></li>
+                </ul>
+            </div>
+        </li>
+    </ul>
+</nav>
