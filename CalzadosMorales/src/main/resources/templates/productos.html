@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Gestión de Productos</title>
+    
+    <link rel="stylesheet" href="/assets/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="/assets/vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    
+    <style>
+        /* Paginación Morada */
+        .page-item.active .page-link { background-color: #9a55ff !important; border-color: #9a55ff !important; color: white !important; }
+        .page-link { color: #9a55ff !important; }
+        
+        /* DataTable Bonito */
+        .dataTables_length label { display: flex !important; align-items: center !important; margin-bottom: 1rem; }
+        .dataTables_length select { background-color: #fff !important; border: 1px solid #ebedf2 !important; padding: 5px 25px 5px 10px !important; border-radius: 4px !important; margin: 0 10px !important; min-width: 70px; }
+        .dataTables_filter input { border: 1px solid #ebedf2 !important; padding: 5px 10px !important; border-radius: 4px !important; margin-left: 0.5rem; }
+        .dataTables_filter input:focus { border-color: #9a55ff !important; outline: none !important; }
+        
+        /* BOTONES CENTRADOS PERFECTOS */
+        .btn-icon-center {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 35px; height: 35px; padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-scroller">
+        <nav th:replace="~{fragmentos/navbar :: navbar}"></nav>
+        
+        <div class="container-fluid page-body-wrapper">
+            <nav th:replace="~{fragmentos/sidebar :: sidebar}"></nav>
+
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    
+                    <div class="page-header">
+                        <h3 class="page-title">
+                            <span class="page-title-icon bg-gradient-primary text-white me-2">
+                                <i class="mdi mdi-shoe-sneaker"></i>
+                            </span> Inventario de Productos
+                        </h3>
+                        <button type="button" class="btn btn-gradient-primary btn-fw" onclick="abrirModalNuevo()">
+                            <i class="mdi mdi-plus"></i> Nuevo Producto
+                        </button>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table id="tablaProductos" class="table table-hover table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Producto</th>
+                                                    <th>Categoría</th>
+                                                    <th>Talla</th>
+                                                    <th>Color</th>
+                                                    <th>Material</th>
+                                                    <th>Precio</th>
+                                                    <th>Stock</th>
+                                                    <th>Estado</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:each="p : ${productos}">
+                                                    <td th:text="${p.nombre}"></td>
+                                                    <td th:text="${p.categoria.nombre}"></td>
+                                                    <td th:text="${p.talla.nombre}"></td>
+                                                    <td th:text="${p.color.nombre}"></td>
+                                                    <td th:text="${p.material.nombre}"></td>
+                                                    
+                                                    <td th:text="'S/ ' + ${p.precio}"></td>
+                                                    <td>
+                                                        <span th:class="${p.stock < 5 ? 'text-danger fw-bold' : 'text-success'}" 
+                                                              th:text="${p.stock}"></span>
+                                                    </td>
+                                                    
+                                                    <td>
+                                                        <label class="badge badge-success" th:if="${p.estado}">Activo</label>
+                                                        <label class="badge badge-danger" th:unless="${p.estado}">Inactivo</label>
+                                                    </td>
+                                                    
+                                                    <td>
+                                                        <div th:if="${p.estado}" class="d-inline-flex gap-1">
+                                                            <button class="btn btn-sm btn-inverse-info btn-icon-center" 
+                                                                    onclick="cargarDatos(this)"
+                                                                    th:data-id="${p.id_producto}"
+                                                                    th:data-nombre="${p.nombre}"
+                                                                    th:data-descripcion="${p.descripcion}"
+                                                                    th:data-precio="${p.precio}"
+                                                                    th:data-stock="${p.stock}"
+                                                                    th:data-categoria="${p.categoria.id_categoria}"
+                                                                    th:data-talla="${p.talla.id_talla}"
+                                                                    th:data-color="${p.color.id_color}"
+                                                                    th:data-material="${p.material.id_material}"
+                                                                    title="Editar">
+                                                                <i class="mdi mdi-pencil"></i>
+                                                            </button>
+
+                                                            <a th:href="@{/productos/cambiarEstado/} + ${p.id_producto} + '/false'"
+                                                               class="btn btn-sm btn-inverse-danger btn-icon-center" title="Desactivar">
+                                                                <i class="mdi mdi-delete"></i>
+                                                            </a>
+                                                        </div>
+
+                                                        <div th:unless="${p.estado}">
+                                                            <a th:href="@{/productos/cambiarEstado/} + ${p.id_producto} + '/true'"
+                                                               class="btn btn-sm btn-inverse-success btn-icon-center" title="Activar">
+                                                                <i class="mdi mdi-check"></i>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="modalProducto" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalTitle">Nuevo Producto</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            
+                            <form th:action="@{/productos/guardar}" method="post" th:object="${producto}" class="needs-validation" novalidate>
+                                <div class="modal-body">
+                                    <input type="hidden" id="id_producto" th:field="*{id_producto}">
+                                    
+                                    <div class="row">
+                                        <div class="col-md-8 form-group mb-3">
+                                            <label>Nombre Producto</label>
+                                            <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required>
+                                            <div class="invalid-feedback">Por favor ingrese el nombre.</div>
+                                        </div>
+                                        <div class="col-md-4 form-group mb-3">
+                                            <label>Precio (S/)</label>
+                                            <input type="number" step="0.10" class="form-control" id="precio" th:field="*{precio}" required min="0.1">
+                                            <div class="invalid-feedback">Ingrese un precio válido.</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-3 form-group mb-3">
+                                            <label>Categoría</label>
+                                            <select class="form-control" id="categoria" th:field="*{categoria.id_categoria}" required>
+                                                <option th:each="c : ${categorias}" th:value="${c.id_categoria}" th:text="${c.nombre}"></option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 form-group mb-3">
+                                            <label>Talla</label>
+                                            <select class="form-control" id="talla" th:field="*{talla.id_talla}" required>
+                                                <option th:each="t : ${tallas}" th:value="${t.id_talla}" th:text="${t.nombre}"></option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 form-group mb-3">
+                                            <label>Color</label>
+                                            <select class="form-control" id="color" th:field="*{color.id_color}" required>
+                                                <option th:each="col : ${colores}" th:value="${col.id_color}" th:text="${col.nombre}"></option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 form-group mb-3">
+                                            <label>Material</label>
+                                            <select class="form-control" id="material" th:field="*{material.id_material}" required>
+                                                <option th:each="m : ${materiales}" th:value="${m.id_material}" th:text="${m.nombre}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-4 form-group mb-3">
+                                            <label>Stock Inicial</label>
+                                            <input type="number" class="form-control" id="stock" th:field="*{stock}" required min="0">
+                                            <div class="invalid-feedback">El stock no puede ser negativo.</div>
+                                        </div>
+                                        <div class="col-md-8 form-group mb-3">
+                                            <label>Descripción</label>
+                                            <input type="text" class="form-control" id="descripcion" th:field="*{descripcion}">
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn btn-primary">Guardar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="footer">
+                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2026 Calzados Morales</span>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="/assets/vendors/js/vendor.bundle.base.js"></script>
+    <script src="/assets/js/off-canvas.js"></script>
+    <script src="/assets/js/misc.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+        var myModal;
+
+        $(document).ready(function() {
+            var modalElement = document.getElementById('modalProducto');
+            if (modalElement) {
+                myModal = new bootstrap.Modal(modalElement);
+            }
+
+            $('#tablaProductos').DataTable({
+                "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros",
+                    "zeroRecords": "No se encontraron coincidencias",
+                    "info": "Mostrando del _START_ al _END_ de _TOTAL_ registros",
+                    "infoEmpty": "Sin registros",
+                    "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                    "search": "Buscar:",
+                    "paginate": { "first": "Primero", "last": "Último", "next": "Siguiente", "previous": "Anterior" }
+                },
+                "pageLength": 10
+            });
+            
+            // --- SCRIPT DE VALIDACIÓN (Bordes Rojos) ---
+            (function () {
+              'use strict'
+              var forms = document.querySelectorAll('.needs-validation')
+              Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                  if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                  }
+                  form.classList.add('was-validated')
+                }, false)
+              })
+            })()
+        });
+
+        function abrirModalNuevo() {
+            limpiarModal();
+            if(myModal) myModal.show();
+        }
+
+        function cargarDatos(btn) {
+            document.getElementById('modalTitle').innerText = "Editar Producto";
+            document.getElementById('id_producto').value = btn.getAttribute('data-id');
+            document.getElementById('nombre').value = btn.getAttribute('data-nombre');
+            document.getElementById('descripcion').value = btn.getAttribute('data-descripcion');
+            document.getElementById('precio').value = btn.getAttribute('data-precio');
+            document.getElementById('stock').value = btn.getAttribute('data-stock');
+            document.getElementById('categoria').value = btn.getAttribute('data-categoria');
+            document.getElementById('talla').value = btn.getAttribute('data-talla');
+            document.getElementById('color').value = btn.getAttribute('data-color');
+            document.getElementById('material').value = btn.getAttribute('data-material');
+            if(myModal) myModal.show();
+        }
+
+        function limpiarModal() {
+            document.getElementById('modalTitle').innerText = "Nuevo Producto";
+            document.getElementById('id_producto').value = '';
+            document.getElementById('nombre').value = '';
+            document.getElementById('descripcion').value = '';
+            document.getElementById('precio').value = '';
+            document.getElementById('stock').value = '';
+            
+            // Limpiar rojo
+            var form = document.querySelector('.needs-validation');
+            if (form) form.classList.remove('was-validated');
+
+            ['categoria', 'talla', 'color', 'material'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if(el && el.options.length > 0) el.selectedIndex = 0;
+            });
+        }
+    </script>
+    
+    <script th:if="${success != null}">
+        Swal.fire({ icon: 'success', title: '¡Éxito!', text: "[(${success})]", confirmButtonColor: '#9a55ff' });
+    </script>
+    <script th:if="${error != null}">
+        Swal.fire({ icon: 'error', title: 'Error', text: "[(${error})]", confirmButtonColor: '#d33' });
+    </script>
+</body>
+</html>
