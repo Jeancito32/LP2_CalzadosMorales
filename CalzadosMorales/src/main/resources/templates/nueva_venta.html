@@ -12,177 +12,100 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 
     <style>
-        /* ETIQUETAS DE INFORMACIÓN */
-        .info-badge { 
-            font-size: 1rem;       
-            padding: 8px 15px;     
-            border-radius: 8px;    
-            margin-right: 15px;    
-            margin-bottom: 10px;   
-            display: inline-block;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-        }
-        
+        .info-badge { font-size: 1rem; padding: 8px 15px; border-radius: 8px; margin-right: 15px; margin-bottom: 10px; display: inline-block; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .badge-talla { background-color: #e9ecef; color: #495057; border: 1px solid #ced4da; }
         .badge-color { background-color: #f8f9fa; color: #333; border: 1px solid #ced4da; }
         .badge-precio { background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; font-weight: bold; }
-        
-        .info-container { 
-            margin-top: 20px; 
-            padding: 15px;
-            background-color: #fff;
-            border-radius: 10px;
-            min-height: 40px; 
-        }
-
-        /* Estilo para mensaje de error en cantidad */
+        .info-container { margin-top: 20px; padding: 15px; background-color: #fff; border-radius: 10px; min-height: 40px; }
         .invalid-feedback { font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="container-scroller">
         <nav th:replace="~{fragmentos/navbar :: navbar}"></nav>
-        
         <div class="container-fluid page-body-wrapper">
             <nav th:replace="~{fragmentos/sidebar :: sidebar}"></nav>
-
             <div class="main-panel">
                 <div class="content-wrapper">
-                    
                     <div class="page-header">
                         <h3 class="page-title">
-                            <span class="page-title-icon bg-gradient-success text-white me-2">
-                                <i class="mdi mdi-cart"></i>
-                            </span> Nueva Venta
+                            <span class="page-title-icon bg-gradient-success text-white me-2"><i class="mdi mdi-cart"></i></span> Nueva Venta
                         </h3>
                     </div>
-
                     <div class="row">
                         <div class="col-md-5 grid-margin stretch-card">
                             <div class="card">
                                 <div class="card-body">
                                     <h4 class="card-title text-primary"><i class="mdi mdi-magnify"></i> Seleccionar Producto</h4>
-                                    
                                     <form th:action="@{/ventas/agregar}" method="post" id="formAgregar">
-                                        
                                         <div class="form-group">
                                             <label class="fw-bold">Buscar Calzado:</label>
                                             <select class="form-select select2" name="id_producto" id="selectProducto" required onchange="mostrarInfoProducto()">
                                                 <option value="" selected>-- Buscar por nombre --</option>
-                                                <option th:each="p : ${productos}" 
-                                                        th:value="${p.id_producto}" 
-                                                        th:text="${p.nombre}"
-                                                        th:data-talla="${p.talla.nombre}" 
-                                                        th:data-color="${p.color.nombre}" 
-                                                        th:data-precio="${p.precio}"
-                                                        th:data-stock="${p.stock}">
-                                                </option>
+                                                <option th:each="p : ${productos}" th:value="${p.id_producto}" th:text="${p.nombre}"
+                                                        th:data-talla="${p.talla.nombre}" th:data-color="${p.color.nombre}" 
+                                                        th:data-precio="${p.precio}" th:data-stock="${p.stock}"></option>
                                             </select>
                                         </div>
-
                                         <div id="infoProducto" class="info-container" style="display:none;">
-                                            <span class="info-badge badge-talla">
-                                                <i class="mdi mdi-ruler"></i> Talla: <b id="lblTalla"></b>
-                                            </span>
-                                            <span class="info-badge badge-color">
-                                                <i class="mdi mdi-palette"></i> Color: <b id="lblColor"></b>
-                                            </span>
-                                            <span class="info-badge badge-precio">
-                                                <i class="mdi mdi-cash"></i> S/ <b id="lblPrecio"></b>
-                                            </span>
-                                            <div class="mt-3 text-muted">
-                                                <i class="mdi mdi-package-variant"></i> Stock Disponible: <b id="lblStock" class="text-dark"></b>
-                                            </div>
+                                            <span class="info-badge badge-talla"><i class="mdi mdi-ruler"></i> Talla: <b id="lblTalla"></b></span>
+                                            <span class="info-badge badge-color"><i class="mdi mdi-palette"></i> Color: <b id="lblColor"></b></span>
+                                            <span class="info-badge badge-precio"><i class="mdi mdi-cash"></i> S/ <b id="lblPrecio"></b></span>
+                                            <div class="mt-3 text-muted"><i class="mdi mdi-package-variant"></i> Stock: <b id="lblStock" class="text-dark"></b></div>
                                         </div>
-
                                         <div class="form-group mt-4">
                                             <label class="fw-bold">Cantidad:</label>
-                                            <input type="number" name="cantidad" id="txtCantidad" 
-                                                   class="form-control form-control-lg text-center" 
-                                                   value="1" min="1" required 
-                                                   onkeyup="validarCantidad()" onchange="validarCantidad()">
-                                            <div class="invalid-feedback">La cantidad debe ser mínimo 1.</div>
-                                            <div class="valid-feedback">¡Cantidad válida!</div>
+                                            <input type="number" name="cantidad" id="txtCantidad" class="form-control form-control-lg text-center" value="1" min="1" required>
                                         </div>
-
-                                        <button type="submit" class="btn btn-gradient-primary w-100 mt-3 btn-lg">
-                                            <i class="mdi mdi-cart-plus"></i> AGREGAR AL CARRITO
-                                        </button>
+                                        <button type="submit" class="btn btn-gradient-primary w-100 mt-3 btn-lg">AGREGAR</button>
                                     </form>
                                 </div>
                             </div>
                         </div>
-
                         <div class="col-md-7 grid-margin stretch-card">
                             <div class="card">
                                 <div class="card-body d-flex flex-column">
-                                    <h4 class="card-title text-success"><i class="mdi mdi-cart-outline"></i> Carrito de Compras</h4>
-                                    
+                                    <h4 class="card-title text-success"><i class="mdi mdi-cart-outline"></i> Carrito</h4>
                                     <div class="table-responsive flex-grow-1">
                                         <table class="table table-hover">
-                                            <thead class="table-light">
-                                                <tr>
-                                                    <th>Producto</th>
-                                                    <th class="text-center">Cant.</th>
-                                                    <th class="text-end">Subtotal</th>
-                                                    <th></th>
-                                                </tr>
+                                            <thead>
+                                                <tr><th>Producto</th><th>Cant.</th><th>Subtotal</th><th></th></tr>
                                             </thead>
                                             <tbody>
-                                                <tr th:if="${carrito == null or carrito.empty}">
-                                                    <td colspan="4" class="text-center text-muted py-4">Carrito vacío</td>
-                                                </tr>
+                                                <tr th:if="${carrito == null or carrito.empty}"><td colspan="4" class="text-center">Carrito vacío</td></tr>
                                                 <tr th:each="item, stat : ${carrito}">
                                                     <td th:text="${item.producto.nombre}"></td>
                                                     <td class="text-center" th:text="${item.cantidad}"></td>
                                                     <td class="text-end fw-bold" th:text="'S/ ' + ${item.subtotal}"></td>
-                                                    <td class="text-center">
-                                                        <a th:href="@{/ventas/quitar/{index}(index=${stat.index})}" class="btn btn-inverse-danger btn-sm" title="Quitar">
-                                                            <i class="mdi mdi-delete"></i>
-                                                        </a>
-                                                    </td>
+                                                    <td><a th:href="@{/ventas/quitar/{index}(index=${stat.index})}" class="text-danger"><i class="mdi mdi-delete"></i></a></td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
-
-                                    <div class="d-flex justify-content-between align-items-center mt-4 p-3 bg-light rounded">
-                                        <h4>Total a Pagar:</h4>
-                                        <h2 class="text-success fw-bold" th:text="'S/ ' + ${total}">S/ 0.00</h2>
+                                    <div class="d-flex justify-content-between p-3 bg-light rounded">
+                                        <h4>Total:</h4><h2 class="text-success fw-bold" th:text="'S/ ' + ${total}"></h2>
                                     </div>
-
                                     <hr>
-
                                     <form th:action="@{/ventas/guardar}" method="post" id="formVenta" target="_blank">
                                         <div class="form-group mb-3">
-                                            <label class="fw-bold">Cliente (Para Comprobante):</label>
-                                            <div class="input-group">
-                                                <select class="form-select select2" name="id_cliente" required>
-                                                    <option value="">-- Seleccione Cliente --</option>
-                                                    <option th:each="c : ${clientes}" 
-                                                            th:value="${c.id_cliente}" 
-                                                            th:text="${c instanceof T(com.calzadosmorales.entity.PersonaNatural) ? 'DNI: ' + c.dni + ' - ' + c.nombre + ' ' + c.apellido : 'RUC: ' + c.ruc + ' - ' + c.razonSocial}">
-                                                    </option>
-                                                </select>
-                                                
-                                                <a href="/clientes" target="_blank" class="btn btn-outline-secondary" title="Registrar Nuevo Cliente">
-                                                    <i class="mdi mdi-plus"></i>
-                                                </a>
-                                            </div>
+                                            <label class="fw-bold">Cliente:</label>
+                                            <select class="form-select select2" name="id_cliente" id="cboCliente" required>
+                                                <option value="">-- Seleccione Cliente --</option>
+                                                <option th:each="c : ${clientes}" th:value="${c.id_cliente}" 
+                                                        th:text="${c instanceof T(com.calzadosmorales.entity.PersonaNatural) ? 'DNI: ' + c.dni + ' - ' + c.nombre : 'RUC: ' + c.ruc + ' - ' + c.razonSocial}"></option>
+                                            </select>
                                         </div>
-                                        
                                         <div class="d-grid">
-                                            <button type="button" onclick="confirmarVenta()" class="btn btn-success btn-lg text-white" th:disabled="${carrito == null or carrito.empty}">
-                                                <i class="mdi mdi-printer"></i> GENERAR COMPROBANTE (PDF)
+                                            <button type="button" onclick="confirmarVenta()" class="btn btn-success btn-lg" th:disabled="${carrito == null or carrito.empty}">
+                                                <i class="mdi mdi-printer"></i> GENERAR COMPROBANTE
                                             </button>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                         </div>
-                    </div> </div>
-                
-                <footer class="footer">...</footer>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -190,92 +113,44 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/vendors/js/vendor.bundle.base.js"></script>
-    <script src="/assets/js/off-canvas.js"></script>
-    <script src="/assets/js/misc.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script th:inline="javascript">
-        $(document).ready(function() {
-            $('.select2').select2({ theme: 'bootstrap-5', width: '100%' });
-        });
+        $(document).ready(function() { $('.select2').select2({ theme: 'bootstrap-5', width: '100%' }); });
 
-        // 1. MOSTRAR INFO PRODUCTO
         function mostrarInfoProducto() {
-            var select = document.getElementById('selectProducto');
-            if (select.selectedIndex === -1) return;
-            var option = select.options[select.selectedIndex];
-            
+            var option = document.getElementById('selectProducto').options[document.getElementById('selectProducto').selectedIndex];
             if (option.value) {
                 document.getElementById('lblTalla').innerText = option.getAttribute('data-talla');
                 document.getElementById('lblColor').innerText = option.getAttribute('data-color');
                 document.getElementById('lblPrecio').innerText = option.getAttribute('data-precio');
                 document.getElementById('lblStock').innerText = option.getAttribute('data-stock');
-                $('#infoProducto').fadeIn(); 
-            } else {
-                $('#infoProducto').hide();
-            }
+                $('#infoProducto').fadeIn();
+            } else { $('#infoProducto').hide(); }
         }
 
-        // 2. VALIDAR CANTIDAD (ROJO / VERDE)
-        function validarCantidad() {
-            var input = document.getElementById('txtCantidad');
-            var valor = parseInt(input.value);
-
-            if (isNaN(valor) || valor <= 0) {
-                // MAL: Rojo
-                input.classList.remove('is-valid');
-                input.classList.add('is-invalid');
-            } else {
-                // BIEN: Verde
-                input.classList.remove('is-invalid');
-                input.classList.add('is-valid');
-            }
-        }
-
-        // 3. CONFIRMACIÓN Y MANEJO DE PDF/RECARGA
         function confirmarVenta() {
+            var idCli = $('#cboCliente').val();
+            if (!idCli) {
+                Swal.fire('Atención', 'Seleccione un cliente primero', 'warning');
+                return;
+            }
             Swal.fire({
                 title: '¿Confirmar Venta?',
-                text: "Se generará el comprobante PDF en una nueva pestaña.",
+                text: "Se generará el PDF en otra pestaña.",
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'Sí, Facturar',
-                confirmButtonColor: '#198754',
-                cancelButtonColor: '#d33'
+                confirmButtonColor: '#198754'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // PASO 1: Enviar el formulario (abre el PDF en nueva pestaña gracias a target="_blank")
                     document.getElementById('formVenta').submit();
-                    
-                    // PASO 2: Mostrar mensaje de éxito AQUÍ mientras se abre el PDF allá
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Venta Registrada!',
-                        text: 'El comprobante se ha abierto en otra pestaña. Limpiando sistema...',
-                        timer: 3000,
-                        showConfirmButton: false
-                    });
-
-                    // PASO 3: Recargar esta página después de 2 segundos para limpiar el carrito visualmente
-                    setTimeout(function() {
-                        window.location.href = "/ventas/nueva"; 
-                    }, 2000);
+                    Swal.fire({ icon: 'success', title: 'Venta Registrada', showConfirmButton: false, timer: 2000 });
+                    setTimeout(function() { window.location.href = "/ventas/nueva"; }, 2500);
                 }
             });
         }
     </script>
-
-    <script th:if="${success == 'Producto Agregado'}">
-        const Toast = Swal.mixin({
-            toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true
-        });
-        Toast.fire({ icon: 'success', title: 'Producto agregado al carrito' });
-    </script>
-    
-    <script th:if="${error != null}">
-        Swal.fire({ icon: 'error', title: 'Atención', text: '[[${error}]]' });
-    </script>
-
 </body>
 </html>
