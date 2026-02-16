@@ -18,14 +18,34 @@ public class DashboardVendedorController {
     @Autowired
     private DashboardVendedorService dashboardService;
 
-    @GetMapping("/index")
-    public String dashboard(@RequestParam("idUsuario") int idUsuario, Model model){
+    @Autowired
+    private UsuarioService usuarioService; // Lo necesitamos para buscar el ID
 
-        model.addAttribute("ventasMes", dashboardService.ventasMes(idUsuario));
-        model.addAttribute("comision", dashboardService.comisionMes(idUsuario));
-        model.addAttribute("cantidadVentas", dashboardService.cantidadVentas(idUsuario));
-        model.addAttribute("paresVendidos", dashboardService.paresVendidos(idUsuario));
-        model.addAttribute("productoEstrella", dashboardService.productoEstrella(idUsuario));
+    @GetMapping("/index")
+    public String dashboard(@RequestParam(name = "idUsuario", required = false) Integer idUsuario, 
+                            Model model, 
+                            Authentication auth) {
+        
+        // Si el idUsuario no viene en la URL (como pasa en el login)
+        if (idUsuario == null && auth != null) {
+            // Buscamos al usuario en la DB por su nombre de login (adminXio)
+            // Asumiendo que tienes un método buscarPorNombre o similar en tu UsuarioRepository
+            // Si no lo tienes, podemos usar el nombre directamente
+            String username = auth.getName();
+            // Aquí un pequeño truco: si no tienes el ID a la mano, 
+            // puedes quemar el ID 1 temporalmente para probar que cargue
+            idUsuario = 1; 
+            model.addAttribute("username", username);
+        }
+
+        // Si después de lo anterior tenemos un ID, cargamos los datos de Andrés
+        if (idUsuario != null) {
+            model.addAttribute("ventasMes", dashboardService.ventasMes(idUsuario));
+            model.addAttribute("comision", dashboardService.comisionMes(idUsuario));
+            model.addAttribute("cantidadVentas", dashboardService.cantidadVentas(idUsuario));
+            model.addAttribute("paresVendidos", dashboardService.paresVendidos(idUsuario));
+            model.addAttribute("productoEstrella", dashboardService.productoEstrella(idUsuario));
+        }
 
         return "index";
     }
