@@ -31,10 +31,10 @@
             </a>
             <div class="collapse" id="ui-almacen">
                 <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="/categorias">Categorías</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="/colores">Colores</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="/tallas">Tallas</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="/materiales">Materiales</a></li>
+                    <li class="nav-item" sec:authorize="hasRole('ROLE_1')"> <a class="nav-link" href="/categorias">Categorías</a></li>
+					<li class="nav-item" sec:authorize="hasRole('ROLE_1')"> <a class="nav-link" href="/colores">Colores</a></li>
+					<li class="nav-item" sec:authorize="hasRole('ROLE_1')"> <a class="nav-link" href="/tallas">Tallas</a></li>
+					<li class="nav-item" sec:authorize="hasRole('ROLE_1')"> <a class="nav-link" href="/materiales">Materiales</a></li>
                     <li class="nav-item"> <a class="nav-link" href="/productos">Productos</a></li>
                 </ul>
             </div>
@@ -49,7 +49,9 @@
             <div class="collapse" id="ui-ventas">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item"> <a class="nav-link" href="/clientes">Gestión Clientes</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="/ventas/nueva">Nueva Venta</a></li>
+                    <li class="nav-item" sec:authorize="hasRole('ROLE_2')"> 
+                        <a class="nav-link" href="/ventas/nueva">Nueva Venta</a>
+                    </li>
                 </ul>
             </div>
         </li>
@@ -64,8 +66,8 @@
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item"> <a class="nav-link" href="/consultas/stock">Consulta Stock</a></li>
                     <li class="nav-item"> <a class="nav-link" href="/consultas/precios">Consulta Precios</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="/reportes/ventas">Reporte Ventas</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="/reportes/top">Prod. Más Vendidos</a></li>
+                    <li class="nav-item" sec:authorize="hasRole('ROLE_1')"> <a class="nav-link" href="/reportes/ventas">Reporte Ventas</a></li>
+                    <li class="nav-item" sec:authorize="hasRole('ROLE_1')"> <a class="nav-link" href="/reportes/top">Prod. Más Vendidos</a></li>
                 </ul>
             </div>
         </li>

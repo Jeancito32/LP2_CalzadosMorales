@@ -1,17 +1,13 @@
 package com.calzadosmorales.controller;
 
 import org.springframework.security.core.Authentication;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import com.calzadosmorales.entity.Usuario;
 import com.calzadosmorales.repository.UsuarioRepository;
 import com.calzadosmorales.service.DashboardVendedorService;
-import com.calzadosmorales.service.UsuarioService;
 
 @Controller
 public class DashboardVendedorController {
@@ -20,34 +16,31 @@ public class DashboardVendedorController {
     private DashboardVendedorService dashboardService;
 
     @Autowired
-    private UsuarioRepository usuarioRepo; // <--- Cambiamos a Repository para buscar por nombre de usuario
+    private UsuarioRepository usuarioRepo;
 
     @GetMapping("/index")
-    public String dashboard(@RequestParam(name = "idUsuario", required = false) Integer idUsuario, 
-                            Model model, 
-                            Authentication auth) {
-        
-        // 1. Si venimos del Login, el idUsuario es null. Lo buscamos por Authentication.
-        if (idUsuario == null && auth != null) {
-            String username = auth.getName(); // Trae "adminXio"
-            Usuario u = usuarioRepo.findByUsuario(username); // Busca todo el perfil
+    public String dashboard(Model model, Authentication auth) {
+        if (auth != null) {
+            String username = auth.getName();
+            Usuario u = usuarioRepo.findByUsuario(username);
             
             if (u != null) {
-                idUsuario = u.getId_usuario(); // ¡Ya tenemos el ID real!
                 model.addAttribute("userNombreCompleto", u.getNombre());
                 model.addAttribute("userRol", u.getRol().getNombre());
+                
+                model.addAttribute("rolId", u.getRol().getId_rol());
+                
+               
+                if (u.getRol().getId_rol() == 2) {
+                    int idReal = u.getId_usuario();
+                    model.addAttribute("ventasMes", dashboardService.ventasMes(idReal));
+                    model.addAttribute("comision", dashboardService.comisionMes(idReal));
+                    model.addAttribute("cantidadVentas", dashboardService.cantidadVentas(idReal));
+                    model.addAttribute("paresVendidos", dashboardService.paresVendidos(idReal));
+                    model.addAttribute("productoEstrella", dashboardService.productoEstrella(idReal));
+                }
             }
         }
-
-        // 2. Si logramos obtener un ID (ya sea por URL o por búsqueda), cargamos los servicios de Andrés
-        if (idUsuario != null) {
-            model.addAttribute("ventasMes", dashboardService.ventasMes(idUsuario));
-            model.addAttribute("comision", dashboardService.comisionMes(idUsuario));
-            model.addAttribute("cantidadVentas", dashboardService.cantidadVentas(idUsuario));
-            model.addAttribute("paresVendidos", dashboardService.paresVendidos(idUsuario));
-            model.addAttribute("productoEstrella", dashboardService.productoEstrella(idUsuario));
-        }
-
         return "index";
     }
 }
