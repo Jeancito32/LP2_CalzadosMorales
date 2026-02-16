@@ -37,4 +37,11 @@ public class UsuarioService {
     public List<Rol> listarRoles() {
         return rolRepo.findAll();
     }
+    
+    public Usuario buscarPorUsuario(String usuario){
+        return usuarioRepo.findByUsuario(usuario);
+    }
+
+    
+    
 }
