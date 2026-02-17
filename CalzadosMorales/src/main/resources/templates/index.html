@@ -50,7 +50,7 @@
                                 <div class="card bg-gradient-info card-img-holder text-white">
                                     <div class="card-body">
                                         <img src="assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
-                                        <h4 class="font-weight-normal mb-3">Cantidad de Ventas <i class="mdi mdi-receipt mdi-24px float-right"></i></h4>
+                                        <h4 class="font-weight-normal mb-3">Cantidad de Ventas<i class="mdi mdi-trending-up mdi-24px float-right"></i>
                                         <h2 class="mb-5" th:text="${cantidadVentas}">0</h2>
                                         <h6 class="card-text">Operaciones exitosas</h6>
                                     </div>
@@ -78,11 +78,71 @@
                                 </div>
                             </div>
                         </div>
+						<div class="row mt-4 justify-content-right">
+						    <div class="col-md-8 grid-margin stretch-card">
+						        <div class="card shadow-sm" style="border-radius:15px;">
+						            
+						            <div class="card-body text-right">
+						                
+						                <h5 class="card-title mb-4">Mis Categorías Top</h5>
+
+						                <div class="d-flex justify-content-center align-items-right"
+						                     style="height:420px;">
+						                     
+						                    <div style="position:relative; width:100%; max-width:550px;">
+						                        <canvas id="graficoCategorias"></canvas>
+						                    </div>
+
+						                </div>
+
+						            </div>
+						        </div>
+						    </div>
+						</div>
+
+
+
                     </div> </div>
             </div>
         </div>
     </div>
 
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	
+	<script th:inline="javascript">
+
+	let datos = [[${categoriasTop}]];
+
+	let nombres = [];
+	let cantidades = [];
+
+	datos.forEach(function(item){
+	    nombres.push(item[0]);
+	    cantidades.push(item[1]);
+	});
+
+	const ctx = document.getElementById('graficoCategorias');
+
+	new Chart(ctx, {
+	    type: 'pie', 
+	    data: {
+	        labels: nombres,
+	        datasets: [{
+	            label: 'Pares vendidos',
+	            data: cantidades
+	        }]
+	    },
+		options: {
+		    responsive: true,
+		    maintainAspectRatio: false
+		}
+
+	});
+	</script>
+
+
+
+	
     <script src="assets/vendors/js/vendor.bundle.base.js"></script>  
     <script src="assets/vendors/chart.js/chart.umd.js"></script> 
     <script src="assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script> 

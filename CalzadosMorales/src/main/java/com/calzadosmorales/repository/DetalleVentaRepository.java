@@ -31,6 +31,19 @@ public interface DetalleVentaRepository extends JpaRepository<DetalleVenta,Integ
         ORDER BY SUM(d.cantidad) DESC
     """)
     List<String> productoEstrellaMes(int idUsuario, Pageable pageable);
+    
+   // Categorías más vendidas del mes
+    @Query("""
+    	    SELECT p.categoria.nombre, SUM(d.cantidad)
+    	    FROM DetalleVenta d
+    	    JOIN d.producto p
+    	    WHERE d.venta.usuario.id_usuario = ?1
+    	    AND MONTH(d.venta.fecha)=MONTH(CURRENT_DATE)
+    	    AND YEAR(d.venta.fecha)=YEAR(CURRENT_DATE)
+    	    GROUP BY p.categoria.nombre
+    	""")
+    	List<Object[]> categoriasMasVendidas(int idUsuario);
+
 
 }
 

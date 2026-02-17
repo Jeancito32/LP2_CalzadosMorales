@@ -38,6 +38,7 @@ public class DashboardVendedorController {
                     model.addAttribute("cantidadVentas", dashboardService.cantidadVentas(idReal));
                     model.addAttribute("paresVendidos", dashboardService.paresVendidos(idReal));
                     model.addAttribute("productoEstrella", dashboardService.productoEstrella(idReal));
+                    model.addAttribute("categoriasTop", dashboardService.categoriasTop(idReal));
                 }
             }
         }

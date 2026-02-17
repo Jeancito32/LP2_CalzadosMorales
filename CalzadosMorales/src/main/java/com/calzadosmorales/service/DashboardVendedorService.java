@@ -44,5 +44,10 @@ public class DashboardVendedorService {
         List<String> lista = detalleRepo.productoEstrellaMes(idUsuario, PageRequest.of(0,1));
         return lista.isEmpty() ? "Sin ventas" : lista.get(0);
     }
+    
+    public List<Object[]> categoriasTop(int idUsuario){
+        return detalleRepo.categoriasMasVendidas(idUsuario);
+    }
+
 
 }
