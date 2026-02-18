@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication; // IMPORTANTE
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import com.calzadosmorales.entity.DetalleVenta;
 import com.calzadosmorales.entity.Producto;
 import com.calzadosmorales.entity.Usuario;
 import com.calzadosmorales.entity.Venta;
+import com.calzadosmorales.repository.UsuarioRepository; // IMPORTANTE
 import com.calzadosmorales.service.ClienteService;
 import com.calzadosmorales.service.PdfService;
 import com.calzadosmorales.service.ProductoService;
@@ -41,6 +43,9 @@ public class VentaController {
     
     @Autowired
     private PdfService pdfService;
+
+    @Autowired
+    private UsuarioRepository usuarioRepo; // Inyectamos para buscar al usuario real
 
     // 1. PANTALLA PRINCIPAL
     @GetMapping("/nueva")
@@ -113,7 +118,7 @@ public class VentaController {
     @GetMapping("/quitar/{index}")
     public String quitarDelCarrito(@PathVariable("index") int index, HttpSession session) {
         List<DetalleVenta> carrito = (List<DetalleVenta>) session.getAttribute("carrito");
-        if (carrito != null) carrito.remove(index);
+        if (carrito != null && index < carrito.size()) carrito.remove(index);
         return "redirect:/ventas/nueva";
     }
     
@@ -123,26 +128,28 @@ public class VentaController {
         return "redirect:/ventas/nueva";
     }
 
-    // 4. GUARDAR VENTA (LÓGICA DE COMPROBANTE CORREGIDA)
+    // 4. GUARDAR VENTA (CON USUARIO DINÁMICO Y NÚMERO GENERADO)
     @PostMapping("/guardar")
     public String guardarVenta(
             @RequestParam("id_cliente") Integer idCliente, 
             HttpSession session, 
-            RedirectAttributes flash) {
+            RedirectAttributes flash,
+            Authentication auth) { // <-- Authentication captura al usuario logueado
 
         List<DetalleVenta> carrito = (List<DetalleVenta>) session.getAttribute("carrito");
-        if (carrito == null || carrito.isEmpty()) return "redirect:/ventas/nueva";
+        if (carrito == null || carrito.isEmpty()) {
+            flash.addFlashAttribute("error", "El carrito está vacío.");
+            return "redirect:/ventas/nueva";
+        }
 
         try {
             Venta venta = new Venta();
             venta.setFecha(LocalDateTime.now());
             
-            // BUSCAMOS EL CLIENTE REAL PARA VALIDAR EL TIPO
-            
+            // 1. CLIENTE Y TIPO DE COMPROBANTE
             Cliente clienteReal = clienteService.buscarPorId(idCliente);
             venta.setCliente(clienteReal);
 
-            // --- LÓGICA DE BOLETA VS FACTURA ---
             if (clienteReal instanceof PersonaJuridica) {
                 venta.setTipoComprobante("Factura");
                 venta.setSerie("F001");
@@ -151,11 +158,12 @@ public class VentaController {
                 venta.setSerie("B001");
             }
 
-            // Usuario Hardcoded (Vendedor con ID 1)
-            Usuario vendedor = new Usuario();
-            vendedor.setId_usuario(1); 
-            venta.setUsuario(vendedor);
+            // 2. CAPTURAR USUARIO REAL DESDE LA SESIÓN
+            String username = auth.getName();
+            Usuario usuarioLogueado = usuarioRepo.findByUsuario(username);
+            venta.setUsuario(usuarioLogueado); 
             
+            // 3. CÁLCULO DE TOTALES
             BigDecimal total = carrito.stream()
                     .map(DetalleVenta::getSubtotal)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -165,31 +173,31 @@ public class VentaController {
                 venta.agregarDetalle(d);
             }
             
-            // GUARDAR
+            // 4. PRIMER GUARDADO (Para obtener el ID autonumérico)
             ventaService.registrarVenta(venta);
 
-            // --- RELLENAR EL CAMPO 'NUMERO' CON EL ID GENERADO ---
-            // Daybis quería el número, así que le ponemos el ID con ceros a la izquierda
+            // 5. ACTUALIZAR NÚMERO DE COMPROBANTE (Ej: 000015)
             venta.setNumero(String.format("%06d", venta.getId_venta()));
-            ventaService.registrarVenta(venta); // Actualizamos con el número
+            ventaService.registrarVenta(venta); 
             
             session.removeAttribute("carrito");
+            
+            // Redirigir directamente al PDF
             return "redirect:/ventas/verPDF/" + venta.getId_venta();
             
         } catch (Exception e) {
-            flash.addFlashAttribute("error", "Error: " + e.getMessage());
+            flash.addFlashAttribute("error", "Error al procesar la venta: " + e.getMessage());
             return "redirect:/ventas/nueva";
         }
     }
     
- // 5. VER PDF
+    // 5. GENERAR PDF
     @GetMapping("/verPDF/{id}")
     public void verPDF(@PathVariable("id") Integer idVenta, HttpServletResponse response) throws IOException {
         Venta venta = ventaService.buscarPorId(idVenta); 
         if (venta != null) {
-            // ¡QUITAMOS EL // DE AQUÍ ABAJO!
+            // Se asume que pdfService maneja el diseño según Boleta o Factura internamente
             pdfService.exportarVentaPDF(response, venta);
         }
     }
-  
 }

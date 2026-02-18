@@ -1,22 +1,16 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" 
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Dashboard | Calzados Morales</title>
-    <link rel="stylesheet" href="assets/vendors/mdi/css/materialdesignicons.min.css"> 
-    <link rel="stylesheet" href="assets/vendors/ti-icons/css/themify-icons.css"> 
-    <link rel="stylesheet" href="assets/vendors/css/vendor.bundle.base.css"> 
-    <link rel="stylesheet" href="assets/vendors/font-awesome/css/font-awesome.min.css"> 
-    <link rel="stylesheet" href="assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css"> 
-    <link rel="stylesheet" href="assets/css/style.css"> 
-    <link rel="shortcut icon" href="assets/images/favicon.png" />
+    <link rel="stylesheet" th:href="@{/assets/vendors/mdi/css/materialdesignicons.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/vendors/css/vendor.bundle.base.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
     <style>
-        .card-img-absolute { position: absolute; top: 0; right: 0; height: 100%; opacity: 0.4; }
-        .page-title-icon { box-shadow: 0 4px 10px rgba(182, 109, 255, 0.3); }
+        .card-img-absolute { position: absolute; top: 0; right: 0; height: 100%; opacity: 0.3; }
+        .progress { border-radius: 10px; background: rgba(255,255,255,0.2); }
     </style>
 </head>
-
 <body>
     <div class="container-scroller">
         <nav th:replace="~{fragmentos/navbar :: navbar}"></nav>
@@ -28,41 +22,87 @@
                     
                     <div class="page-header">
                         <h3 class="page-title">
-                            <span class="page-title-icon bg-gradient-primary text-white me-2">
-                                <i class="mdi mdi-home"></i>
-                            </span> ¡Hola, <span th:text="${userNombreCompleto}">Usuario</span>! Bienvenid@ al sistema de Calzados Morales.
+                            <span class="page-title-icon bg-gradient-primary text-white me-2"><i class="mdi mdi-home"></i></span>
+                            ¡Hola, <span th:text="${userNombreCompleto}">Usuario</span>!
                         </h3>
                     </div>
 
-                    <div th:if="${rolId == 2}">
+                    <div th:if="${rolId == 1}">
                         <div class="row">
-                            <div class="col-md-4 stretch-card grid-margin">
-                                <div class="card bg-gradient-danger card-img-holder text-white">
+                            <div class="col-md-3 stretch-card grid-margin">
+                                <div class="card bg-gradient-primary text-white card-img-holder">
                                     <div class="card-body">
-                                        <img src="assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
-                                        <h4 class="font-weight-normal mb-3">Ventas del Mes <i class="mdi mdi-cash-multiple mdi-24px float-right"></i></h4>
-                                        <h2 class="mb-5">S/. <span th:text="${ventasMes}">0</span></h2>
-                                        <h6 class="card-text">Mi Comisión: S/. <span th:text="${comision}">0</span></h6>
+                                        <img th:src="@{/assets/images/dashboard/circle.svg}" class="card-img-absolute" />
+                                        <h4 class="font-weight-normal mb-3">Caja Hoy <i class="mdi mdi-cash-usd float-right"></i></h4>
+                                        <h2 th:text="'S/. ' + ${stats.ingresosDia}">S/. 0.00</h2>
+                                        <div class="progress"><div class="progress-bar bg-white" th:style="'width:'+${stats.progresoMeta}+'%'"></div></div>
+                                        <p class="mt-3" th:text="${stats.progresoMeta} + '% de la meta diaria'"></p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 stretch-card grid-margin">
-                                <div class="card bg-gradient-info card-img-holder text-white">
+                            <div class="col-md-3 stretch-card grid-margin">
+                                <div class="card bg-gradient-info text-white card-img-holder">
                                     <div class="card-body">
-                                        <img src="assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
-                                        <h4 class="font-weight-normal mb-3">Cantidad de Ventas<i class="mdi mdi-trending-up mdi-24px float-right"></i>
-                                        <h2 class="mb-5" th:text="${cantidadVentas}">0</h2>
-                                        <h6 class="card-text">Operaciones exitosas</h6>
+                                        <img th:src="@{/assets/images/dashboard/circle.svg}" class="card-img-absolute" />
+                                        <h4 class="font-weight-normal mb-3">Ventas Hoy <i class="mdi mdi-run float-right"></i></h4>
+                                        <h2 th:text="${stats.cantidadVentas}">0</h2>
+                                        <p class="mt-3">Operaciones totales</p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 stretch-card grid-margin">
-                                <div class="card bg-gradient-success card-img-holder text-white">
+                            <div class="col-md-3 stretch-card grid-margin">
+                                <div class="card bg-gradient-danger text-white card-img-holder">
                                     <div class="card-body">
-                                        <img src="assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
-                                        <h4 class="font-weight-normal mb-3">Pares Vendidos <i class="mdi mdi-shoe-formal mdi-24px float-right"></i></h4>
-                                        <h2 class="mb-5" th:text="${paresVendidos}">0</h2>
-                                        <h6 class="card-text">Total de calzado entregado</h6>
+                                        <img th:src="@{/assets/images/dashboard/circle.svg}" class="card-img-absolute" />
+                                        <h4 class="font-weight-normal mb-3">Alerta Stock <i class="mdi mdi-alert float-right"></i></h4>
+                                        <h2 th:text="${stats.productosEnAlerta}">0</h2>
+                                        <p class="mt-3">Modelos críticos</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 stretch-card grid-margin">
+                                <div class="card bg-gradient-success text-white card-img-holder">
+                                    <div class="card-body">
+                                        <img th:src="@{/assets/images/dashboard/circle.svg}" class="card-img-absolute" />
+                                        <h4 class="font-weight-normal mb-3">Top Vendedor <i class="mdi mdi-medal float-right"></i></h4>
+                                        <h4 th:text="${stats.nombreTopVendedor}">-</h4>
+                                        <p class="mt-3" th:text="'S/ ' + ${stats.montoTopVendedor}"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 grid-margin">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">Últimos Movimientos en Tienda</h4>
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th> ID </th>
+                                                        <th> Comprobante </th>
+                                                        <th> Total </th>
+                                                        <th> Vendedor </th>
+                                                        <th> Ver </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr th:each="v : ${stats.ultimasVentas}">
+                                                        <td th:text="'#' + ${v.id_venta}"></td>
+                                                        <td th:text="${v.tipoComprobante} + ' ' + ${v.serie} + '-' + ${v.numero}"></td>
+                                                        <td class="font-weight-bold" th:text="'S/ ' + ${v.total}"></td>
+                                                        <td th:text="${v.usuario.nombre}"></td>
+                                                        <td>
+                                                            <a th:href="@{/ventas/verPDF/{id}(id=${v.id_venta})}" target="_blank">
+                                                                <i class="mdi mdi-file-pdf text-danger"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -70,87 +110,106 @@
 
                         <div class="row">
                             <div class="col-md-12 grid-margin stretch-card">
-                                <div class="card shadow-sm border-0" style="border-radius: 15px;">
-                                    <div class="card-body py-4 text-center">
-                                        <h4 class="text-uppercase text-muted mb-3" style="letter-spacing: 2px;">Producto más vendido por ti</h4>
-                                        <h1 class="display-4 text-primary font-weight-bold" th:text="${productoEstrella}">-</h1>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">Rendimiento Semanal</h4>
+                                        <canvas id="graficoVentasSemana" height="100"></canvas>
                                     </div>
                                 </div>
                             </div>
                         </div>
-						<div class="row mt-4 justify-content-right">
-						    <div class="col-md-8 grid-margin stretch-card">
-						        <div class="card shadow-sm" style="border-radius:15px;">
-						            
-						            <div class="card-body text-right">
-						                
-						                <h5 class="card-title mb-4">Mis Categorías Top</h5>
+                    </div>
 
-						                <div class="d-flex justify-content-center align-items-right"
-						                     style="height:420px;">
-						                     
-						                    <div style="position:relative; width:100%; max-width:550px;">
-						                        <canvas id="graficoCategorias"></canvas>
-						                    </div>
+                    <div th:if="${rolId == 2}">
+                        <div class="row">
+                            <div class="col-md-4 stretch-card grid-margin">
+                                <div class="card bg-gradient-danger text-white card-img-holder">
+                                    <div class="card-body">
+                                        <h4 class="mb-3">Venta Mes <i class="mdi mdi-cash float-right"></i></h4>
+                                        <h2 th:text="'S/. ' + ${ventasMes}">0</h2>
+                                        <h6 th:text="'Comisión: S/. ' + ${comision}"></h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 stretch-card grid-margin">
+                                <div class="card bg-gradient-info text-white card-img-holder">
+                                    <div class="card-body">
+                                        <h4 class="mb-3">Cantidad Ventas <i class="mdi mdi-run float-right"></i></h4>
+                                        <h2 th:text="${cantidadVentas}">0</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 stretch-card grid-margin">
+                                <div class="card bg-gradient-success text-white card-img-holder">
+                                    <div class="card-body">
+                                        <h4 class="mb-3">Pares Vendidos <i class="mdi mdi-shoe-formal float-right"></i></h4>
+                                        <h2 th:text="${paresVendidos}">0</h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5 stretch-card grid-margin">
+                                <div class="card"><div class="card-body text-center">
+                                    <h4 class="text-muted">Producto Estrella</h4>
+                                    <h2 class="text-primary font-weight-bold" th:text="${productoEstrella}">-</h2>
+                                </div></div>
+                            </div>
+                            <div class="col-md-7 stretch-card grid-margin">
+                                <div class="card"><div class="card-body">
+                                    <h4 class="card-title">Categorías Top</h4>
+                                    <canvas id="graficoCategorias"></canvas>
+                                </div></div>
+                            </div>
+                        </div>
+                    </div>
 
-						                </div>
-
-						            </div>
-						        </div>
-						    </div>
-						</div>
-
-
-
-                    </div> </div>
-            </div>
-        </div>
-    </div>
-
-	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-	
-	<script th:inline="javascript">
-
-	let datos = [[${categoriasTop}]];
-
-	let nombres = [];
-	let cantidades = [];
-
-	datos.forEach(function(item){
-	    nombres.push(item[0]);
-	    cantidades.push(item[1]);
-	});
-
-	const ctx = document.getElementById('graficoCategorias');
-
-	new Chart(ctx, {
-	    type: 'pie', 
-	    data: {
-	        labels: nombres,
-	        datasets: [{
-	            label: 'Pares vendidos',
-	            data: cantidades
-	        }]
-	    },
-		options: {
-		    responsive: true,
-		    maintainAspectRatio: false
-		}
-
-	});
-	</script>
-
-
-
-	
-    <script src="assets/vendors/js/vendor.bundle.base.js"></script>  
-    <script src="assets/vendors/chart.js/chart.umd.js"></script> 
-    <script src="assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script> 
-    <script src="assets/js/off-canvas.js"></script> 
-    <script src="assets/js/misc.js"></script> 
-    <script src="assets/js/settings.js"></script> 
-    <script src="assets/js/todolist.js"></script> 
-    <script src="assets/js/jquery.cookie.js"></script> 
-    <script src="assets/js/dashboard.js"></script> 
+                </div> <footer class="footer">
+                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                        <span class="text-muted">Copyright © 2026 Calzados Morales</span>
+                    </div>
+                </footer>
+            </div> </div> </div> <script th:src="@{/assets/vendors/js/vendor.bundle.base.js}"></script>
+    <script th:src="@{/assets/vendors/chart.js/chart.umd.js}"></script>
+    
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        document.addEventListener("DOMContentLoaded", function() {
+            const rolId = /*[[${rolId}]]*/ 0;
+            if (rolId === 2) {
+                const datosPie = /*[[${categoriasTop}]]*/ [];
+                if (datosPie.length > 0) {
+                    new Chart(document.getElementById('graficoCategorias'), {
+                        type: 'pie',
+                        data: {
+                            labels: datosPie.map(i => i[0]),
+                            datasets: [{
+                                data: datosPie.map(i => i[1]),
+                                backgroundColor: ['#9a55ff', '#fe7096', '#047edf', '#84d9d2', '#da8cff']
+                            }]
+                        }
+                    });
+                }
+            }
+            if (rolId === 1) {
+                const stats = /*[[${stats}]]*/ {};
+                const datosBarra = stats.ventasSemanales || [];
+                if (datosBarra.length > 0) {
+                    new Chart(document.getElementById('graficoVentasSemana'), {
+                        type: 'bar',
+                        data: {
+                            labels: datosBarra.map(i => i[0]),
+                            datasets: [{
+                                label: 'Ventas S/',
+                                data: datosBarra.map(i => i[1]),
+                                backgroundColor: '#b66dff'
+                            }]
+                        }
+                    });
+                }
+            }
+        });
+        /*]]>*/
+    </script>
 </body>
 </html>
