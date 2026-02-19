@@ -1,6 +1,8 @@
 package com.calzadosmorales.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -16,38 +18,39 @@ public class DashboardVendedorService {
     @Autowired
     private VentaRepository ventaRepo;
 
-    @Autowired
-    private DetalleVentaRepository detalleRepo;
+ 
+    public Map<String, Object> obtenerDatosDashboardVendedor(int idUsuario) {
+        Map<String, Object> datos = new HashMap<>();
 
-    public Double ventasMes(int idUsuario){
-        Double total = ventaRepo.totalVentasMes(idUsuario);
-        return total != null ? total : 0.0;
+        // TARJETAS
+        
+        Double ventasMes = ventaRepo.getVentasMes(idUsuario);
+        datos.put("ventasMes", ventasMes != null ? ventasMes : 0.0);
+        
+        Double comision = ventaRepo.getComisionMes(idUsuario);
+        datos.put("comision", comision != null ? comision : 0.0);
+        
+        Integer pares = ventaRepo.getParesVendidos(idUsuario);
+        datos.put("paresVendidos", pares != null ? pares : 0);
+        
+        String producto = ventaRepo.getProductoEstrella(idUsuario);
+        datos.put("productoStar", producto != null ? producto : "Sin ventas");
+        
+        String mejorCliente = ventaRepo.getMejorCliente(idUsuario);
+        datos.put("mejorCliente", mejorCliente != null ? mejorCliente : "Sin ventas");
+
+
+        // GrAfico de Barras
+        datos.put("datosBarras", ventaRepo.getRendimientoComparativo(idUsuario));
+        
+        // GrAfico Circular
+        datos.put("categoriasTop", ventaRepo.getVentasPorGenero(idUsuario));
+ 
+        // TABLA DE ACTIVIDAD 
+
+        // Lista de los últimos 7 clientes atendidos
+        datos.put("ultimasVentasVendedor", ventaRepo.getUltimosSieteClientes(idUsuario));
+
+        return datos;
     }
-
-    public Double comisionMes(int idUsuario){
-        Double total = ventaRepo.totalVentasMes(idUsuario);
-        if(total == null) total = 0.0;
-        return total * 0.05;
-    }
-
-    public Integer cantidadVentas(int idUsuario){
-        Integer cantidad = ventaRepo.cantidadVentasMes(idUsuario);
-        return cantidad != null ? cantidad : 0;
-    }
-
-    public Integer paresVendidos(int idUsuario){
-        Integer pares = detalleRepo.paresVendidosMes(idUsuario);
-        return pares != null ? pares : 0;
-    }
-
-    public String productoEstrella(int idUsuario){
-        List<String> lista = detalleRepo.productoEstrellaMes(idUsuario, PageRequest.of(0,1));
-        return lista.isEmpty() ? "Sin ventas" : lista.get(0);
-    }
-    
-    public List<Object[]> categoriasTop(int idUsuario){
-        return detalleRepo.categoriasMasVendidas(idUsuario);
-    }
-
-
 }

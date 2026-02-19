@@ -7,8 +7,13 @@
     <link rel="stylesheet" th:href="@{/assets/vendors/css/vendor.bundle.base.css}">
     <link rel="stylesheet" th:href="@{/assets/css/style.css}">
     <style>
-        .card-img-absolute { position: absolute; top: 0; right: 0; height: 100%; opacity: 0.3; }
-        .progress { border-radius: 10px; background: rgba(255,255,255,0.2); }
+        .card-img-absolute { position: absolute; top: 0; right: 0; height: 100%; opacity: 0.2; }
+        .col-5-custom { flex: 0 0 20%; max-width: 20%; padding: 0 10px; }
+        .card-body.p-metric { padding: 1.2rem; }
+        .p-metric h2, .p-metric h3 { font-size: 1.4rem; margin-top: 10px; font-weight: bold; }
+        @media (max-width: 1200px) { .col-5-custom { flex: 0 0 33.33%; max-width: 33.33%; } }
+        @media (max-width: 768px) { .col-5-custom { flex: 0 0 50%; max-width: 50%; } }
+        @media (max-width: 576px) { .col-5-custom { flex: 0 0 100%; max-width: 100%; } }
     </style>
 </head>
 <body>
@@ -23,50 +28,74 @@
                     <div class="page-header">
                         <h3 class="page-title">
                             <span class="page-title-icon bg-gradient-primary text-white me-2"><i class="mdi mdi-home"></i></span>
-                            ¡Hola, <span th:text="${userNombreCompleto}">Usuario</span>!
+							¡Hola, <span th:text="${userNombreCompleto}">Usuario</span>! 
+							<small class="text-muted">([[${userRol}]])</small>
                         </h3>
                     </div>
 
                     <div th:if="${rolId == 1}">
                         <div class="row">
-                            <div class="col-md-3 stretch-card grid-margin">
+                            <div class="col-5-custom stretch-card grid-margin">
                                 <div class="card bg-gradient-primary text-white card-img-holder">
-                                    <div class="card-body">
+                                    <div class="card-body p-metric">
                                         <img th:src="@{/assets/images/dashboard/circle.svg}" class="card-img-absolute" />
-                                        <h4 class="font-weight-normal mb-3">Caja Hoy <i class="mdi mdi-cash-usd float-right"></i></h4>
-                                        <h2 th:text="'S/. ' + ${stats.ingresosDia}">S/. 0.00</h2>
-                                        <div class="progress"><div class="progress-bar bg-white" th:style="'width:'+${stats.progresoMeta}+'%'"></div></div>
-                                        <p class="mt-3" th:text="${stats.progresoMeta} + '% de la meta diaria'"></p>
+                                        <h4 class="font-weight-normal mb-3 small">INGRESOS DE HOY <i class="mdi mdi-cash-usd float-right"></i></h4>
+                                        <h2 th:text="'S/ ' + ${#numbers.formatDecimal(ingresosDia, 1, 2)}">S/ 0.00</h2>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3 stretch-card grid-margin">
+                            <div class="col-5-custom stretch-card grid-margin">
                                 <div class="card bg-gradient-info text-white card-img-holder">
-                                    <div class="card-body">
+                                    <div class="card-body p-metric">
                                         <img th:src="@{/assets/images/dashboard/circle.svg}" class="card-img-absolute" />
-                                        <h4 class="font-weight-normal mb-3">Ventas Hoy <i class="mdi mdi-run float-right"></i></h4>
-                                        <h2 th:text="${stats.cantidadVentas}">0</h2>
-                                        <p class="mt-3">Operaciones totales</p>
+                                        <h4 class="font-weight-normal mb-3 small">VENTAS DE HOY <i class="mdi mdi-run float-right"></i></h4>
+                                        <h2 th:text="${cantidadVentas}">0</h2>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3 stretch-card grid-margin">
+                            <div class="col-5-custom stretch-card grid-margin">
                                 <div class="card bg-gradient-danger text-white card-img-holder">
-                                    <div class="card-body">
+                                    <div class="card-body p-metric">
                                         <img th:src="@{/assets/images/dashboard/circle.svg}" class="card-img-absolute" />
-                                        <h4 class="font-weight-normal mb-3">Alerta Stock <i class="mdi mdi-alert float-right"></i></h4>
-                                        <h2 th:text="${stats.productosEnAlerta}">0</h2>
-                                        <p class="mt-3">Modelos críticos</p>
+                                        <h4 class="font-weight-normal mb-3 small">PRODUCTOS SIN TOCK <i class="mdi mdi-alert float-right"></i></h4>
+                                        <h2 th:text="${productosEnAlerta}">0</h2>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3 stretch-card grid-margin">
-                                <div class="card bg-gradient-success text-white card-img-holder">
-                                    <div class="card-body">
+                            <div class="col-5-custom stretch-card grid-margin">
+                                <div class="card bg-gradient-warning text-white card-img-holder">
+                                    <div class="card-body p-metric">
                                         <img th:src="@{/assets/images/dashboard/circle.svg}" class="card-img-absolute" />
-                                        <h4 class="font-weight-normal mb-3">Top Vendedor <i class="mdi mdi-medal float-right"></i></h4>
-                                        <h4 th:text="${stats.nombreTopVendedor}">-</h4>
-                                        <p class="mt-3" th:text="'S/ ' + ${stats.montoTopVendedor}"></p>
+                                        <h4 class="font-weight-normal mb-3 small">CLIENTE NUEVOS (MES) <i class="mdi mdi-account-multiple-plus float-right"></i></h4>
+                                        <h2 th:text="${clientesNuevos}">0</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-5-custom stretch-card grid-margin">
+                                <div class="card bg-gradient-success text-white card-img-holder">
+                                    <div class="card-body p-metric">
+                                        <img th:src="@{/assets/images/dashboard/circle.svg}" class="card-img-absolute" />
+                                        <h4 class="font-weight-normal mb-3 small">VENTAS PROMEDIO <i class="mdi mdi-chart-line float-right"></i></h4>
+                                        <h2 th:text="'S/ ' + ${#numbers.formatDecimal(ticketPromedio, 1, 2)}">S/ 0.00</h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-7 grid-margin stretch-card">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">VENTAS DE LA ULTIMA SEMANA (S/)</h4>
+                                        <canvas id="graficoVentasSemana" height="150"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-5 grid-margin stretch-card">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">STOCK POR CATEGORIA</h4>
+                                        <canvas id="graficoStockCategorias"></canvas>
                                     </div>
                                 </div>
                             </div>
@@ -76,44 +105,23 @@
                             <div class="col-12 grid-margin">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h4 class="card-title">Últimos Movimientos en Tienda</h4>
+                                        <h4 class="card-title">TOP 5 VENDEDORES DEL MES</h4>
                                         <div class="table-responsive">
-                                            <table class="table table-hover">
-                                                <thead>
+                                            <table class="table table-striped">
+                                                <thead class="bg-light">
                                                     <tr>
-                                                        <th> ID </th>
-                                                        <th> Comprobante </th>
-                                                        <th> Total </th>
                                                         <th> Vendedor </th>
-                                                        <th> Ver </th>
+                                                        <th> Operaciones </th>
+                                                        <th> Total Vendido </th>
+                                                        <th> Variedad </th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr th:each="v : ${stats.ultimasVentas}">
-                                                        <td th:text="'#' + ${v.id_venta}"></td>
-                                                        <td th:text="${v.tipoComprobante} + ' ' + ${v.serie} + '-' + ${v.numero}"></td>
-                                                        <td class="font-weight-bold" th:text="'S/ ' + ${v.total}"></td>
-                                                        <td th:text="${v.usuario.nombre}"></td>
-                                                        <td>
-                                                            <a th:href="@{/ventas/verPDF/{id}(id=${v.id_venta})}" target="_blank">
-                                                                <i class="mdi mdi-file-pdf text-danger"></i>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
+                                                    <tr th:each="v : ${topVendedores}">
+                                                        <td th:text="${v[0]}"></td> <td th:text="${v[1]}"></td> <td th:text="'S/ ' + ${#numbers.formatDecimal(v[2], 1, 2)}"></td> <td><div class="badge badge-gradient-info" th:text="${v[3]} + ' mod.'"></div></td> </tr>
                                                 </tbody>
                                             </table>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-12 grid-margin stretch-card">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h4 class="card-title">Rendimiento Semanal</h4>
-                                        <canvas id="graficoVentasSemana" height="100"></canvas>
                                     </div>
                                 </div>
                             </div>
@@ -122,88 +130,167 @@
 
                     <div th:if="${rolId == 2}">
                         <div class="row">
-                            <div class="col-md-4 stretch-card grid-margin">
+                            <div class="col-5-custom stretch-card grid-margin">
                                 <div class="card bg-gradient-danger text-white card-img-holder">
-                                    <div class="card-body">
-                                        <h4 class="mb-3">Venta Mes <i class="mdi mdi-cash float-right"></i></h4>
-                                        <h2 th:text="'S/. ' + ${ventasMes}">0</h2>
-                                        <h6 th:text="'Comisión: S/. ' + ${comision}"></h6>
+                                    <div class="card-body p-metric">
+                                        <img th:src="@{/assets/images/dashboard/circle.svg}" class="card-img-absolute" />
+                                        <h4 class="font-weight-normal mb-3 small">VENTA DEL MES <i class="mdi mdi-cash float-right"></i></h4>
+                                        <h3 th:text="'S/ ' + ${#numbers.formatDecimal(ventasMes, 1, 2)}">S/ 0.00</h3>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 stretch-card grid-margin">
+                            <div class="col-5-custom stretch-card grid-margin">
                                 <div class="card bg-gradient-info text-white card-img-holder">
-                                    <div class="card-body">
-                                        <h4 class="mb-3">Cantidad Ventas <i class="mdi mdi-run float-right"></i></h4>
-                                        <h2 th:text="${cantidadVentas}">0</h2>
+                                    <div class="card-body p-metric">
+                                        <img th:src="@{/assets/images/dashboard/circle.svg}" class="card-img-absolute" />
+                                        <h4 class="font-weight-normal mb-3 small">COMISION ESTIMIDA (5%) <i class="mdi mdi-wallet-giftcard float-right"></i></h4>
+                                        <h3 th:text="'S/ ' + ${#numbers.formatDecimal(comision, 1, 2)}">S/ 0.00</h3>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 stretch-card grid-margin">
+                            <div class="col-5-custom stretch-card grid-margin">
                                 <div class="card bg-gradient-success text-white card-img-holder">
-                                    <div class="card-body">
-                                        <h4 class="mb-3">Pares Vendidos <i class="mdi mdi-shoe-formal float-right"></i></h4>
-                                        <h2 th:text="${paresVendidos}">0</h2>
+                                    <div class="card-body p-metric">
+                                        <img th:src="@{/assets/images/dashboard/circle.svg}" class="card-img-absolute" />
+                                        <h4 class="font-weight-normal mb-3 small">PARES VENDIDOS (MES) <i class="mdi mdi-shoe-print float-right"></i></h4>
+                                        <h3 th:text="${paresVendidos}">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-5-custom stretch-card grid-margin">
+                                <div class="card bg-gradient-warning text-white card-img-holder">
+                                    <div class="card-body p-metric">
+                                        <img th:src="@{/assets/images/dashboard/circle.svg}" class="card-img-absolute" />
+                                        <h4 class="font-weight-normal mb-3 small">CLIENTE TOP <i class="mdi mdi-account-star float-right"></i></h4>
+                                        <h3 style="font-size: 0.95rem;" th:text="${mejorCliente}">---</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-5-custom stretch-card grid-margin">
+                                <div class="card bg-gradient-primary text-white card-img-holder">
+                                    <div class="card-body p-metric">
+                                        <img th:src="@{/assets/images/dashboard/circle.svg}" class="card-img-absolute" />
+                                        <h4 class="font-weight-normal mb-3 small">PRODUCTO ESTRELLA <i class="mdi mdi-star float-right"></i></h4>
+                                        <h3 style="font-size: 0.85rem;" th:text="${productoStar}">---</h3>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                         <div class="row">
-                            <div class="col-md-5 stretch-card grid-margin">
-                                <div class="card"><div class="card-body text-center">
-                                    <h4 class="text-muted">Producto Estrella</h4>
-                                    <h2 class="text-primary font-weight-bold" th:text="${productoEstrella}">-</h2>
-                                </div></div>
+                            <div class="col-md-7 grid-margin stretch-card">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">RENDIMIENTO vs PROMEDIO TIENDA</h4>
+                                        <canvas id="graficoComparativoVendedor" height="150"></canvas>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-7 stretch-card grid-margin">
-                                <div class="card"><div class="card-body">
-                                    <h4 class="card-title">Categorías Top</h4>
-                                    <canvas id="graficoCategorias"></canvas>
-                                </div></div>
+                            <div class="col-md-5 grid-margin stretch-card">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">VENTAS POR GENERO</h4>
+                                        <canvas id="graficoCategoriasVendedor"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 grid-margin">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">MIS ULTIMOS CLIENTES ATENDIDOS</h4>
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead class="bg-light">
+                                                    <tr>
+                                                        <th> Cliente </th>
+                                                        <th> Documento </th>
+                                                        <th> Teléfono </th>
+                                                        <th> Última Compra </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr th:each="uv : ${ultimasVentasVendedor}">
+                                                        <td th:text="${uv[1]}"></td> <td th:text="${uv[2]}"></td> <td th:text="${uv[3]}"></td> <td>
+                                                            <label class="badge badge-gradient-success" th:text="${uv[4]}"></label> </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                </div> <footer class="footer">
+                </div>
+                <footer class="footer">
                     <div class="d-sm-flex justify-content-center justify-content-sm-between">
                         <span class="text-muted">Copyright © 2026 Calzados Morales</span>
                     </div>
                 </footer>
-            </div> </div> </div> <script th:src="@{/assets/vendors/js/vendor.bundle.base.js}"></script>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/assets/vendors/js/vendor.bundle.base.js}"></script>
     <script th:src="@{/assets/vendors/chart.js/chart.umd.js}"></script>
     
     <script th:inline="javascript">
         /*<![CDATA[*/
         document.addEventListener("DOMContentLoaded", function() {
             const rolId = /*[[${rolId}]]*/ 0;
-            if (rolId === 2) {
-                const datosPie = /*[[${categoriasTop}]]*/ [];
-                if (datosPie.length > 0) {
-                    new Chart(document.getElementById('graficoCategorias'), {
-                        type: 'pie',
-                        data: {
-                            labels: datosPie.map(i => i[0]),
-                            datasets: [{
-                                data: datosPie.map(i => i[1]),
-                                backgroundColor: ['#9a55ff', '#fe7096', '#047edf', '#84d9d2', '#da8cff']
-                            }]
-                        }
-                    });
-                }
-            }
+
+            // CONFIGURACIÓN ADMIN
             if (rolId === 1) {
-                const stats = /*[[${stats}]]*/ {};
-                const datosBarra = stats.ventasSemanales || [];
-                if (datosBarra.length > 0) {
+                const datosBarra = /*[[${ventasSemanales}]]*/ [];
+                if (datosBarra && datosBarra.length > 0) {
                     new Chart(document.getElementById('graficoVentasSemana'), {
                         type: 'bar',
                         data: {
                             labels: datosBarra.map(i => i[0]),
-                            datasets: [{
-                                label: 'Ventas S/',
-                                data: datosBarra.map(i => i[1]),
-                                backgroundColor: '#b66dff'
-                            }]
+                            datasets: [{ label: 'Ventas S/', data: datosBarra.map(i => i[1]), backgroundColor: '#b66dff' }]
+                        }
+                    });
+                }
+
+                const datosStock = /*[[${stockCategorias}]]*/ [];
+                if (datosStock && datosStock.length > 0) {
+                    new Chart(document.getElementById('graficoStockCategorias'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: datosStock.map(i => i[0]),
+                            datasets: [{ data: datosStock.map(i => i[1]), backgroundColor: ['#fe7096', '#9a55ff', '#3fe2d9', '#ffab2d', '#047edf'] }]
+                        }
+                    });
+                }
+            }
+
+            // CONFIGURACIÓN VENDEDOR
+            if (rolId === 2) {
+                const datosBarras = /*[[${datosBarras}]]*/ [];
+                if (datosBarras && datosBarras.length > 0) {
+                    new Chart(document.getElementById('graficoComparativoVendedor'), {
+                        type: 'bar',
+                        data: {
+                            labels: datosBarras.map(i => i[0]),
+                            datasets: [
+                                { label: 'Mis Ventas', data: datosBarras.map(i => i[1]), backgroundColor: '#b66dff' },
+                                { label: 'Promedio Tienda', data: datosBarras.map(i => i[2]), backgroundColor: '#e0e0e0' }
+                            ]
+                        }
+                    });
+                }
+
+                const datosPie = /*[[${categoriasTop}]]*/ [];
+                if (datosPie && datosPie.length > 0) {
+                    new Chart(document.getElementById('graficoCategoriasVendedor'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: datosPie.map(i => i[0]),
+                            datasets: [{ data: datosPie.map(i => i[1]), backgroundColor: ['#fe7096', '#9a55ff', '#3fe2d9', '#ffab2d'] }]
                         }
                     });
                 }
