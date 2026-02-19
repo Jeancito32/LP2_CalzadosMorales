@@ -10,33 +10,38 @@ import com.calzadosmorales.repository.VentaRepository;
 
 @Service
 public class DashboardAdminService {
-    @Autowired private VentaRepository ventaRepo;
-    @Autowired private ProductoRepository productoRepo;
+
+    @Autowired 
+    private VentaRepository ventaRepo;
 
     public Map<String, Object> cargarPanelAdministrativo() {
         Map<String, Object> datos = new HashMap<>();
-        Double ingresos = ventaRepo.obtenerIngresosDia();
-        double actual = (ingresos != null) ? ingresos : 0.0;
         
-        datos.put("ingresosDia", actual);
-        datos.put("progresoMeta", Math.min((actual / 3000.0) * 100, 100.0));
+        // TARJETAS 
         
-        Object ritmoObj = ventaRepo.obtenerRitmoVentas();
-        datos.put("cantidadVentas", (ritmoObj != null) ? ((Number) ritmoObj).longValue() : 0L);
+        Double ingresos = ventaRepo.getAdminCajaHoy();
+        datos.put("ingresosDia", ingresos != null ? ingresos : 0.0);
         
-        datos.put("productosEnAlerta", productoRepo.contarProductosStockCritico());
+        Integer stockCritico = ventaRepo.getAdminStockCritico();
+        datos.put("productosEnAlerta", stockCritico != null ? stockCritico : 0);
         
-        List<Object[]> ranking = ventaRepo.obtenerRankingVendedores();
-        if (ranking != null && !ranking.isEmpty()) {
-            datos.put("nombreTopVendedor", ranking.get(0)[0]);
-            datos.put("montoTopVendedor", ranking.get(0)[1]);
-        } else {
-            datos.put("nombreTopVendedor", "Sin ventas");
-            datos.put("montoTopVendedor", 0.0);
-        }
+        Integer clientesNuevos = ventaRepo.getAdminClientesNuevosMes();
+        datos.put("clientesNuevos", clientesNuevos != null ? clientesNuevos : 0);
+        
+        Integer totalVentas = ventaRepo.getAdminCantidadVentasHoy();
+        datos.put("cantidadVentas", totalVentas != null ? totalVentas : 0);
+        
+        Double promedio = ventaRepo.getAdminTicketPromedio();
+        datos.put("ticketPromedio", promedio != null ? promedio : 0.0);
 
-        datos.put("ultimasVentas", ventaRepo.obtenerUltimasVentas());
-        datos.put("ventasSemanales", ventaRepo.obtenerVentasSemanales());
+        // DATOS PARA GRAFICOS
+
+        datos.put("ventasSemanales", ventaRepo.getAdminVentasSemanales());
+        datos.put("stockCategorias", ventaRepo.getAdminStockPorCategoria());
+
+        // RANKING DE VENDEDORES 
+        datos.put("topVendedores", ventaRepo.getAdminTopCincoVendedores());
+
         return datos;
     }
 }
