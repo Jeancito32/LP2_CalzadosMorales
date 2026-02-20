@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Historial General | Calzados Morales</title>
+    <link rel="stylesheet" th:href="@{/assets/vendors/mdi/css/materialdesignicons.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/vendors/css/vendor.bundle.base.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.png}" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
+    
+    <style>
+        :root {
+            --purple-primary: #b66dff;
+            --success-green: #1cc88a;
+            --border-color: #ebedf2;
+        }
+
+        #contenedor-controles-dt {
+            background-color: #ffffff;
+            padding: 20px 25px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .dataTables_length label, .dataTables_filter label {
+            display: flex;
+            align-items: center; gap: 15px;
+            font-weight: 600; color: #4b49ac; margin-bottom: 0;
+        }
+
+        .dataTables_filter input {
+            border: 1px solid #d1d3e2 !important;
+            border-radius: 25px !important;
+            padding: 8px 18px !important;
+            width: 250px !important;
+        }
+
+        #tablaHistorialAdmin thead th {
+            border: none; color: #3e4b5b; font-weight: 700;
+            text-transform: uppercase; font-size: 0.8rem;
+            padding: 15px; background-color: #f8f9fa;
+        }
+
+        #tablaHistorialAdmin tbody tr {
+            background-color: #ffffff;
+            transition: all 0.2s ease-in-out;
+        }
+
+        #tablaHistorialAdmin tbody tr:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .badge-success { background: rgba(28, 200, 138, 0.1); color: #1cc88a; border: 1px solid #1cc88a; }
+        .badge-danger { background: rgba(255, 98, 88, 0.1); color: #ff6258; border: 1px solid #ff6258; }
+        
+        .linea-visible { border-top: 1px solid #ebedf2; margin: 1.5rem 0; }
+    </style>
+</head>
+<body>
+    <div class="container-scroller">
+        <nav th:replace="~{fragmentos/navbar :: navbar}"></nav>
+        
+        <div class="container-fluid page-body-wrapper">
+            <nav th:replace="~{fragmentos/sidebar :: sidebar}"></nav>
+
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h3 class="page-title">
+                            <span class="page-title-icon bg-gradient-primary text-white me-2">
+                                <i class="mdi mdi-history"></i>
+                            </span> Historial General de Ventas
+                        </h3>
+                        <div>
+                            <a th:href="@{/ventas/exportar-general}" class="btn btn-gradient-info btn-icon-text">
+                                <i class="mdi mdi-file-excel btn-icon-prepend"></i> Reporte Excel
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 grid-margin stretch-card">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-body">
+                                    <h4 class="card-title text-primary mb-0">Listado de todas las Ventas</h4>
+                                    <hr class="linea-visible">
+
+                                    <div id="contenedor-controles-dt"></div>
+
+                                    <div class="table-responsive">
+                                        <table class="table" id="tablaHistorialAdmin" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>Fecha / Hora</th>
+                                                    <th>Vendedor</th>
+                                                    <th>Comprobante</th>
+                                                    <th>Cliente</th>
+                                                    <th class="text-end">Total</th>
+                                                    <th class="text-center">Estado</th>
+                                                    <th class="text-center">Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:each="v : ${listaHistorial}">
+                                                    <td class="align-middle">
+                                                        <span class="font-weight-bold" th:text="${v[1]}"></span>
+                                                    </td>
+                                                    <td class="align-middle">
+                                                        <i class="mdi mdi-account-star text-primary me-1"></i>
+                                                        <span th:text="${v[2]}"></span>
+                                                    </td>
+                                                    <td class="align-middle text-dark font-weight-bold" th:text="${v[4]}"></td>
+                                                    <td class="align-middle text-muted" th:text="${v[3]}"></td>
+                                                    <td class="align-middle text-end text-primary font-weight-bold">
+                                                        S/ <span th:text="${#numbers.formatDecimal(v[5], 1, 'POINT', 2, 'COMMA')}"></span>
+                                                    </td>
+                                                    <td class="align-middle text-center">
+                                                        <span th:class="${v[6] == 'REGISTRADA' ? 'badge badge-success' : 'badge badge-danger'}" 
+                                                              th:text="${v[6]}"></span>
+                                                    </td>
+                                                    <td class="align-middle text-center">
+                                                        <a th:href="@{/comprobante/pdf(idVenta=${v[0]})}" target="_blank" 
+                                                           class="btn btn-gradient-dark btn-rounded btn-icon" title="Ver PDF">
+                                                            <i class="mdi mdi-printer"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+
+                <footer class="footer">
+                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2026 Calzados Morales</span>
+                    </div>
+                </footer>
+            </div> 
+        </div> 
+    </div> 
+
+    <script th:src="@{/assets/vendors/js/vendor.bundle.base.js}"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+    
+    <script th:inline="none">
+        $(document).ready(function() {
+            var table = $('#tablaHistorialAdmin').DataTable({
+                "dom": 'lfrtip',
+                "language": {
+                    "lengthMenu": "Mostrar _MENU_ registros",
+                    "search": "Buscar:",
+                    "info": "Ventas totales: _TOTAL_",
+                    "paginate": { "next": "Sig", "previous": "Ant" },
+                    "emptyTable": "No se encontraron ventas en el historial"
+                },
+                "order": [[ 0, "desc" ]],
+                "pageLength": 10
+            });
+
+            var controlesHtml = '<div class="row align-items-center w-100 m-0">' +
+                                '<div id="dt-mostrar" class="col-md-6 d-flex align-items-center"></div>' +
+                                '<div id="dt-buscar" class="col-md-6 d-flex justify-content-end align-items-center"></div>' +
+                                '</div>';
+            
+            $('#contenedor-controles-dt').html(controlesHtml);
+            $('.dataTables_length').appendTo('#dt-mostrar');
+            $('.dataTables_filter').appendTo('#dt-buscar');
+        });
+    </script>
+</body>
+</html>

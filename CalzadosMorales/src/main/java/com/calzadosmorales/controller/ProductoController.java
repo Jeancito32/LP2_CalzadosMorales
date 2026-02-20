@@ -1,6 +1,7 @@
 package com.calzadosmorales.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -71,4 +72,36 @@ public class ProductoController {
         }
         return "redirect:/productos";
     }
+     
+  // ==========================================
+     // NUEVAS RUTAS: CONSULTAS Y REPORTES
+     // ==========================================
+
+       @GetMapping("/consulta-stock")
+       public String pantallaConsultaStock(
+               @RequestParam(name = "idCat", defaultValue = "0") int idCat,
+               @RequestParam(name = "talla", defaultValue = "") String talla,
+               Model model) {
+           
+  
+           model.addAttribute("listaCategorias", service.listarCategorias());
+           
+
+           var resultados = service.consultarStockConFiltros(idCat, talla);
+           model.addAttribute("listaResultados", (resultados != null) ? resultados : new java.util.ArrayList<>());
+           
+           // Mantener los valores seleccionados en la vista (para que no se borren al filtrar)
+           model.addAttribute("idCategoriaSeleccionada", idCat);
+           model.addAttribute("tallaFiltro", talla);
+           
+           return "consultar_stock"; 
+       }
+
+       @GetMapping("/estancados")
+       @PreAuthorize("hasRole('ROLE_2')") 
+       public String verProductosEstancados(Model model) {
+
+           model.addAttribute("listaEstancados", service.obtenerProductosEstancados());
+           return "productos_estancados"; 
+       }
 }

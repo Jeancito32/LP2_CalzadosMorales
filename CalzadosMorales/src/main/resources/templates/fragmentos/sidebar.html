@@ -17,7 +17,7 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="/index">
+            <a class="nav-link" th:href="@{/index}">
                 <span class="menu-title">Dashboard</span>
                 <i class="mdi mdi-view-dashboard menu-icon"></i>
             </a>
@@ -31,11 +31,11 @@
             </a>
             <div class="collapse" id="ui-almacen">
                 <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="/categorias">Categorías</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="/colores">Colores</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="/tallas">Tallas</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="/materiales">Materiales</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="/productos">Productos</a></li>
+                    <li class="nav-item"> <a class="nav-link" th:href="@{/categorias}">Categorías</a></li>
+                    <li class="nav-item"> <a class="nav-link" th:href="@{/colores}">Colores</a></li>
+                    <li class="nav-item"> <a class="nav-link" th:href="@{/tallas}">Tallas</a></li>
+                    <li class="nav-item"> <a class="nav-link" th:href="@{/materiales}">Materiales</a></li>
+                    <li class="nav-item"> <a class="nav-link" th:href="@{/productos}">Productos</a></li>
                 </ul>
             </div>
         </li>
@@ -48,9 +48,9 @@
             </a>
             <div class="collapse" id="ui-ventas">
                 <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="/clientes">Gestión Clientes</a></li>
+                    <li class="nav-item"> <a class="nav-link" th:href="@{/clientes}">Gestión Clientes</a></li>
                     <li class="nav-item" th:if="${rolId == 2}"> 
-                        <a class="nav-link" href="/ventas/nueva">Nueva Venta</a>
+                        <a class="nav-link" th:href="@{/ventas/nueva}">Nueva Venta</a>
                     </li>
                 </ul>
             </div>
@@ -64,10 +64,33 @@
             </a>
             <div class="collapse" id="ui-reportes">
                 <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="/consultas/stock">Consulta Stock</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="/consultas/precios">Consulta Precios</a></li>
-                    <li class="nav-item" th:if="${rolId == 1}"> <a class="nav-link" href="/reportes/ventas">Reporte Ventas</a></li>
-                    <li class="nav-item" th:if="${rolId == 1}"> <a class="nav-link" href="/reportes/top">Prod. Más Vendidos</a></li>
+                    <li class="nav-item"> 
+                        <a class="nav-link" th:href="@{/productos/consulta-stock}">Consulta Stock</a>
+                    </li>
+                    
+                    <th:block th:if="${rolId == 2}">
+                        <li class="nav-item"> 
+                            <a class="nav-link" th:href="@{/productos/estancados}">Prod. Sin Movimiento</a>
+                        </li>
+                        <li class="nav-item"> 
+                            <a class="nav-link" th:href="@{/ventas/mis-ventas}">Mis Ventas Diarias</a>
+                        </li>
+                        <li class="nav-item"> 
+                            <a class="nav-link" th:href="@{/ventas/recuperar-clientes}">Clientes por Recuperar</a>
+                        </li>
+                    </th:block>
+                    
+                    <th:block th:if="${rolId == 1}">
+                        <li class="nav-item"> 
+                            <a class="nav-link" th:href="@{/ventas/historial-general}">Historial de Ventas</a>
+                        </li>
+                        <li class="nav-item"> 
+                            <a class="nav-link" th:href="@{/ventas/reporte-fechas}">Ventas por Rango</a>
+                        </li>
+                        <li class="nav-item"> 
+                            <a class="nav-link" th:href="@{/ventas/analisis-horario}">Análisis Horario</a>
+                        </li>
+                    </th:block>
                 </ul>
             </div>
         </li>
@@ -80,8 +103,8 @@
             </a>
             <div class="collapse" id="ui-seguridad">
                 <ul class="nav flex-column sub-menu">
-                    <li class="nav-item"> <a class="nav-link" href="/usuarios">Usuarios</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="/roles">Roles y Accesos</a></li>
+                    <li class="nav-item"> <a class="nav-link" th:href="@{/usuarios}">Usuarios</a></li>
+                    <li class="nav-item"> <a class="nav-link" th:href="@{/roles}">Roles y Accesos</a></li>
                 </ul>
             </div>
         </li>

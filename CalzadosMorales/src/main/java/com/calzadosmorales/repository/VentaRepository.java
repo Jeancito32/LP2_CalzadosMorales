@@ -11,7 +11,7 @@ import com.calzadosmorales.entity.Venta;
 public interface VentaRepository extends JpaRepository<Venta, Integer> {
 
     // ==========================================
-    // LLAMADAS A PROCEDIMIENTOS (VENDEDOR)
+    // LLAMADAS A PROCEDIMIENTOS (VENDEDOR - DASHBOARD)
     // ==========================================
 
     @Query(value = "CALL sp_VentasMesVendedor(:id)", nativeQuery = true)
@@ -39,7 +39,7 @@ public interface VentaRepository extends JpaRepository<Venta, Integer> {
     List<Object[]> getUltimosSieteClientes(@Param("id") int idVendedor);
 
     // ==========================================
-    // LLAMADAS A PROCEDIMIENTOS (ADMINISTRADOR)
+    // LLAMADAS A PROCEDIMIENTOS (ADMINISTRADOR - DASHBOARD)
     // ==========================================
 
     @Query(value = "CALL sp_AdminCajaHoy()", nativeQuery = true)
@@ -65,5 +65,32 @@ public interface VentaRepository extends JpaRepository<Venta, Integer> {
 
     @Query(value = "CALL sp_AdminTopCincoVendedores()", nativeQuery = true)
     List<Object[]> getAdminTopCincoVendedores();
+    
+    // ==========================================
+    // NUEVAS CONSULTAS (PANTALLAS DE TABLAS)
+    // ==========================================
 
+    // --- PARA VENDEDOR ---
+    @Query(value = "CALL sp_ListarMisVentas(:id)", nativeQuery = true)
+    List<Object[]> listarMisVentas(@Param("id") int idUsuario);
+
+    @Query(value = "CALL sp_TotalVendidoHoyVendedor(:id)", nativeQuery = true)
+    Double totalVendidoHoyVendedor(@Param("id") int idUsuario);
+
+    @Query(value = "CALL sp_VendedorClientesPorRecuperar(:id)", nativeQuery = true)
+    List<Object[]> clientesPorRecuperar(@Param("id") int idUsuario);
+
+
+    // --- PARA ADMINISTRADOR ---
+    @Query(value = "CALL sp_AdminHistorialGeneralVentas()", nativeQuery = true)
+    List<Object[]> adminHistorialGeneral();
+
+    @Query(value = "CALL sp_AdminReporteVentasPorFechas(:ini, :fin)", nativeQuery = true)
+    List<Object[]> adminReporteFechas(@Param("ini") String inicio, @Param("fin") String fin);
+
+    @Query(value = "CALL sp_AdminSumatoriaVentasRango(:ini, :fin)", nativeQuery = true)
+    Double adminSumatoriaRango(@Param("ini") String inicio, @Param("fin") String fin);
+
+    @Query(value = "CALL sp_AdminAnalisisHorarioVentas()", nativeQuery = true)
+    List<Object[]> adminAnalisisHorario();
 }

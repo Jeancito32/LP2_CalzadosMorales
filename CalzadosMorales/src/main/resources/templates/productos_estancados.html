@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Productos Estancados | Calzados Morales</title>
+    <link rel="stylesheet" th:href="@{/assets/vendors/mdi/css/materialdesignicons.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/vendors/css/vendor.bundle.base.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.png}" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
+    
+    <style>
+        :root {
+            --purple-primary: #b66dff;
+            --info-blue: #198ae3;
+            --warning-orange: #f6c23e;
+            --danger-red: #e74a3b;
+            --border-color: #ebedf2;
+        }
+
+        #contenedor-controles-dt {
+            background-color: #ffffff;
+            padding: 20px 25px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        /* Estilo para que el Stock se vea llamativo */
+        .stock-badge {
+            background: linear-gradient(135deg, #f6f8fd 0%, #e9ecef 100%);
+            color: #4b49ac;
+            font-weight: 800;
+            font-size: 1rem;
+            padding: 8px 15px;
+            border-radius: 50px;
+            border: 1px solid #d1d3e2;
+            display: inline-block;
+            min-width: 45px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .dataTables_length label, .dataTables_filter label {
+            display: flex;
+            align-items: center; gap: 15px;
+            font-weight: 600; color: #4b49ac; margin-bottom: 0;
+        }
+
+        .dataTables_filter input {
+            border: 1px solid #d1d3e2 !important;
+            border-radius: 25px !important;
+            padding: 8px 18px !important;
+            width: 250px !important;
+        }
+
+        #tablaEstancados thead th {
+            border: none; color: #3e4b5b; font-weight: 700;
+            text-transform: uppercase; font-size: 0.8rem;
+            padding: 15px; background-color: #f8f9fa; 
+        }
+
+        .dias-badge { font-weight: 800; font-size: 1.1rem; }
+        .alerta-baja { color: var(--info-blue); }
+        .alerta-media { color: var(--warning-orange); }
+        .alerta-critica { color: var(--danger-red); }
+
+        .linea-visible { border-top: 1px solid #ebedf2; margin: 1.5rem 0; }
+    </style>
+</head>
+<body>
+    <div class="container-scroller">
+        <nav th:replace="~{fragmentos/navbar :: navbar}"></nav>
+        
+        <div class="container-fluid page-body-wrapper">
+            <nav th:replace="~{fragmentos/sidebar :: sidebar}"></nav>
+
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h3 class="page-title">
+                            <span class="page-title-icon bg-gradient-danger text-white me-2">
+                                <i class="mdi mdi-package-variant-closed"></i>
+                            </span> Productos Estancados
+                        </h3>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 grid-margin stretch-card">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-body">
+                                    <h4 class="card-title text-primary mb-0">Análisis de Inventario</h4>
+                                    <hr class="linea-visible">
+
+                                    <div id="contenedor-controles-dt"></div>
+
+                                    <div class="table-responsive">
+                                        <table class="table" id="tablaEstancados" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>Producto</th>
+                                                    <th class="text-center">Stock</th>
+                                                    <th class="text-center">Precio</th>
+                                                    <th class="text-center">Última Salida</th>
+                                                    <th class="text-center">Días Estancado</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:each="p : ${listaEstancados}">
+                                                    <td class="align-middle">
+                                                        <div class="font-weight-bold text-dark" th:text="${p[1]}">Nombre</div>
+                                                        <small class="text-muted" th:text="${p[2]}">Categoría</small>
+                                                    </td>
+                                                    <td class="align-middle text-center">
+                                                        <span class="stock-badge" th:text="${p[3]}">0</span>
+                                                    </td>
+                                                    <td class="align-middle text-center">
+                                                        <span class="text-dark font-weight-bold" th:text="'S/ ' + ${p[4]}">S/ 0.00</span>
+                                                    </td>
+                                                    <td class="align-middle text-center">
+                                                        <span class="text-muted" th:text="${p[5]}">Sin Ventas</span>
+                                                    </td>
+                                                    <td class="align-middle text-center">
+                                                        <div th:class="${p[6] >= 120 ? 'dias-badge alerta-critica' : (p[6] >= 60 ? 'dias-badge alerta-media' : 'dias-badge alerta-baja')}">
+                                                            <span th:text="${p[6] == 999 ? '∞' : p[6]}">0</span> 
+                                                            <small th:if="${p[6] != 999}">días</small>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+            </div> 
+        </div> 
+    </div> 
+
+    <script th:src="@{/assets/vendors/js/vendor.bundle.base.js}"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+    
+    <script th:inline="none">
+        $(document).ready(function() {
+            if ($('#tablaEstancados tbody tr').length > 0) {
+                var table = $('#tablaEstancados').DataTable({
+                    "language": {
+                        "lengthMenu": "Mostrar _MENU_ registros",
+                        "search": "Buscar:",
+                        "info": "Mostrando _TOTAL_ productos",
+                        "paginate": { "next": "Sig.", "previous": "Ant." }
+                    },
+                    "order": [[ 4, "desc" ]], 
+                    "pageLength": 10
+                });
+
+                var controlesHtml = '<div class="row w-100 m-0">' +
+                                    '<div id="dt-mostrar" class="col-md-6"></div>' +
+                                    '<div id="dt-buscar" class="col-md-6 d-flex justify-content-end"></div>' +
+                                    '</div>';
+                
+                $('#contenedor-controles-dt').html(controlesHtml);
+                $('.dataTables_length').appendTo('#dt-mostrar');
+                $('.dataTables_filter').appendTo('#dt-buscar');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication; // IMPORTANTE
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -199,5 +200,82 @@ public class VentaController {
             // Se asume que pdfService maneja el diseño según Boleta o Factura internamente
             pdfService.exportarVentaPDF(response, venta);
         }
+    }
+    
+ // ==========================================
+    // NUEVAS RUTAS: CONSULTAS Y REPORTES
+    // ==========================================
+
+ // --- PARA EL VENDEDOR ---
+
+    @GetMapping("/mis-ventas")
+    @PreAuthorize("hasRole('ROLE_2')")
+    public String verMisVentas(Authentication auth, Model model) {
+        String username = auth.getName();
+        Usuario usuarioLogueado = usuarioRepo.findByUsuario(username);
+        
+        if (usuarioLogueado == null) return "redirect:/login";
+
+        model.addAttribute("listaVentas", ventaService.listarMisVentas(usuarioLogueado.getId_usuario()));
+        model.addAttribute("totalHoy", ventaService.totalVendidoHoyVendedor(usuarioLogueado.getId_usuario()));
+        
+        return "mis_ventas"; 
+    }
+
+    @GetMapping("/recuperar-clientes")
+    @PreAuthorize("hasRole('ROLE_2')") 
+    public String verClientesPorRecuperar(Authentication auth, Model model) {
+        String username = auth.getName();
+        Usuario usuarioLogueado = usuarioRepo.findByUsuario(username);
+        
+        if (usuarioLogueado == null) return "redirect:/login";
+
+        model.addAttribute("listaClientes", ventaService.clientesPorRecuperar(usuarioLogueado.getId_usuario()));
+        
+        return "recuperar_clientes"; 
+    }
+    // --- PARA EL ADMINISTRADOR ---
+
+    @GetMapping("/historial-general")
+    @PreAuthorize("hasRole('ROLE_1')") 
+    public String historialGeneral(Model model) {
+        model.addAttribute("listaHistorial", ventaService.obtenerHistorialGeneralAdmin());
+        
+        return "historial_general"; 
+    }
+
+    @PreAuthorize("hasAnyAuthority('1', 'ROLE_1')")
+    @GetMapping("/reporte-fechas")
+    public String reportePorFechas(
+             @RequestParam(name = "inicio", required = false) String inicio,
+             @RequestParam(name = "fin", required = false) String fin,
+             Model model) {
+        
+        // 1. Verificamos si se han enviado fechas (el usuario presionó el botón)
+        if (inicio != null && !inicio.isEmpty() && fin != null && !fin.isEmpty()) {
+            model.addAttribute("listaVentas", ventaService.obtenerReporteFechas(inicio, fin));
+            model.addAttribute("totalSumatoria", ventaService.obtenerSumatoriaRango(inicio, fin));
+            
+            // Mantener las fechas en los inputs para que el usuario vea qué consultó
+            model.addAttribute("fechaInicio", inicio);
+            model.addAttribute("fechaFin", fin);
+            
+            // 2. Agregamos una bandera para indicar que se realizó una búsqueda
+            model.addAttribute("busquedaRealizada", true);
+        } else {
+            // 3. Primera vez que entra: lista nula o vacía y bandera en false
+            model.addAttribute("listaVentas", null); 
+            model.addAttribute("totalSumatoria", 0.0);
+            model.addAttribute("busquedaRealizada", false);
+        }
+        
+        return "reporte_fechas"; 
+    }
+    
+    @PreAuthorize("hasAnyAuthority('1', 'ROLE_1')") 
+    @GetMapping("/analisis-horario")
+    public String verAnalisisHorario(Model model) {
+        model.addAttribute("listaAnalisis", ventaService.obtenerAnalisisHorario());
+        return "analisis_horario"; 
     }
 }
